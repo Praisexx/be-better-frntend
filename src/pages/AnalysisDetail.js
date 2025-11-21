@@ -552,8 +552,9 @@ const AnalysisDetail = () => {
           )}
 
           <div className="prompts-grid">
+            {console.log("Rendering AnalysisDetail V2")}
             {results.creative_prompts?.map((promptItem, index) => (
-              <div key={index} className="prompt-card">
+              <div key={index} className="prompt-card prompt-card-updated">
                 <span className="prompt-number">{index + 1}</span>
                 {typeof promptItem === 'object' ? (
                   <>
