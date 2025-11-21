@@ -8,6 +8,7 @@ import { TrendingUp, FileText, Clock, CheckCircle, BarChart3, Upload } from 'luc
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
+  // Dashboard component for displaying analysis history
   const [analyses, setAnalyses] = useState([]);
   const [queueStatus, setQueueStatus] = useState({ queue_count: 0, analyses: [] });
   const [loading, setLoading] = useState(true);
