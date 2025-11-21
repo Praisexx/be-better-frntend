@@ -237,43 +237,57 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="analyses-grid">
-            {analyses.map((analysis) => (
-              <div key={analysis.id} className="analysis-card">
-                <div className="card-header">
-                  <h3>Analysis #{analysis.id}</h3>
-                  {getStatusBadge(analysis.status)}
-                </div>
+            {analyses.map((analysis) => {
+              let title = `Analysis #${analysis.id}`;
+              try {
+                if (analysis.results_json) {
+                  const results = JSON.parse(analysis.results_json);
+                  if (results.company_name) {
+                    title = `${results.company_name} Analysis`;
+                  }
+                }
+              } catch (e) {
+                // Fallback to ID if parsing fails
+              }
 
-                <div className="card-body">
-                  <p className="filename">{analysis.csv_filename}</p>
-                  <p className="date">
-                    Created: {new Date(analysis.created_at).toLocaleDateString()}
-                  </p>
-                  {analysis.completed_at && (
+              return (
+                <div key={analysis.id} className="analysis-card">
+                  <div className="card-header">
+                    <h3>{title}</h3>
+                    {getStatusBadge(analysis.status)}
+                  </div>
+
+                  <div className="card-body">
+                    <p className="filename">{analysis.csv_filename}</p>
                     <p className="date">
-                      Completed: {new Date(analysis.completed_at).toLocaleDateString()}
+                      Created: {new Date(analysis.created_at).toLocaleDateString()}
                     </p>
-                  )}
-                </div>
+                    {analysis.completed_at && (
+                      <p className="date">
+                        Completed: {new Date(analysis.completed_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
 
-                <div className="card-actions">
-                  {analysis.status === 'completed' && (
+                  <div className="card-actions">
+                    {analysis.status === 'completed' && (
+                      <button
+                        onClick={() => navigate(`/dashboard/analysis/${analysis.id}`)}
+                        className="btn-primary"
+                      >
+                        View Results
+                      </button>
+                    )}
                     <button
-                      onClick={() => navigate(`/dashboard/analysis/${analysis.id}`)}
-                      className="btn-primary"
+                      onClick={() => handleDelete(analysis.id)}
+                      className="btn-danger"
                     >
-                      View Results
+                      Delete
                     </button>
-                  )}
-                  <button
-                    onClick={() => handleDelete(analysis.id)}
-                    className="btn-danger"
-                  >
-                    Delete
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
