@@ -552,10 +552,17 @@ const AnalysisDetail = () => {
           )}
 
           <div className="prompts-grid">
-            {results.creative_prompts?.map((prompt, index) => (
+            {results.creative_prompts?.map((promptItem, index) => (
               <div key={index} className="prompt-card">
                 <span className="prompt-number">{index + 1}</span>
-                <p>{prompt}</p>
+                {typeof promptItem === 'object' ? (
+                  <>
+                    <h4 style={{ marginBottom: '0.5rem', color: 'var(--primary-blue)' }}>{promptItem.concept}</h4>
+                    <p>{promptItem.prompt}</p>
+                  </>
+                ) : (
+                  <p>{promptItem}</p>
+                )}
               </div>
             ))}
           </div>
@@ -631,7 +638,7 @@ const AnalysisDetail = () => {
                 <h4>Caption {index + 1}</h4>
                 {typeof item === 'object' ? (
                   <>
-                    <p className="caption-text">{item.caption}</p>
+                    <p className="caption-text">{item.caption || item.text}</p>
                     <p className="hashtags">{item.hashtags}</p>
                   </>
                 ) : (
