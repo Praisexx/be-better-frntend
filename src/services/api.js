@@ -77,6 +77,49 @@ export const analysisAPI = {
 
   deleteAnalysis: (analysisId) =>
     api.delete(`/api/analysis/${analysisId}`),
+
+  emailReport: (analysisId, email) =>
+    api.post(`/api/analysis/${analysisId}/email`, { email }),
+};
+
+// Account API (OAuth Integration)
+export const accountAPI = {
+  getConnectedAccounts: () =>
+    api.get('/api/accounts/connected'),
+
+  initiateOAuth: (platform) =>
+    api.post(`/api/accounts/oauth/initiate`, { platform }),
+
+  handleOAuthCallback: (platform, code, state) =>
+    api.post(`/api/accounts/oauth/callback`, { platform, code, state }),
+
+  disconnectAccount: (accountId) =>
+    api.delete(`/api/accounts/${accountId}`),
+
+  syncAccount: (accountId) =>
+    api.post(`/api/accounts/${accountId}/sync`),
+
+  getAccountCampaigns: (accountId) =>
+    api.get(`/api/accounts/${accountId}/campaigns`),
+};
+
+// Report Generation API
+export const reportAPI = {
+  generateFromAccount: (accountId, options = {}) =>
+    api.post('/api/reports/generate', {
+      source_type: 'account',
+      account_id: accountId,
+      ...options
+    }),
+
+  generateFromCSV: (analysisId) =>
+    api.post('/api/reports/generate', {
+      source_type: 'csv',
+      analysis_id: analysisId
+    }),
+
+  getReportStatus: (reportId) =>
+    api.get(`/api/reports/${reportId}/status`),
 };
 
 export default api;

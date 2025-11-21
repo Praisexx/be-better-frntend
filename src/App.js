@@ -8,7 +8,10 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Upload from './pages/Upload';
 import AnalysisDetail from './pages/AnalysisDetail';
-import DarkModeToggle from './components/DarkModeToggle';
+import Home from './pages/Home';
+import ConnectAccount from './pages/ConnectAccount';
+import OAuthCallback from './pages/OAuthCallback';
+import Navigation from './components/Navigation';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -27,16 +30,26 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="App">
-            <DarkModeToggle />
+            <Navigation />
             <Toaster position="top-right" />
             <Routes>
+              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/oauth/callback" element={<OAuthCallback />} />
               <Route
                 path="/dashboard"
                 element={
                   <PrivateRoute>
                     <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/connect-account"
+                element={
+                  <PrivateRoute>
+                    <ConnectAccount />
                   </PrivateRoute>
                 }
               />
@@ -56,7 +69,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-              <Route path="/" element={<Navigate to="/dashboard" />} />
             </Routes>
           </div>
         </Router>

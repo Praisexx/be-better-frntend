@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { analysisAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell, PieChart, Pie, LineChart, Line, AreaChart, Area, ComposedChart } from 'recharts';
-import { Download, ArrowLeft, TrendingUp, Lightbulb, Calendar, Sparkles } from 'lucide-react';
+import { Download, ArrowLeft, TrendingUp, Lightbulb, Calendar, Sparkles, Mail } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import Modal from '../components/Modal';
 import '../styles/AnalysisDetail.css';
 
 const AnalysisDetail = () => {
@@ -14,6 +15,9 @@ const AnalysisDetail = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [animationTick, setAnimationTick] = useState(0);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailAddress, setEmailAddress] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   // Refs for chart containers
   const performanceChartRef = useRef(null);
@@ -102,6 +106,28 @@ const AnalysisDetail = () => {
     } catch (error) {
       console.error('PDF download error:', error);
       toast.error('Error downloading PDF', { id: 'pdf-download' });
+    }
+  };
+
+  const handleEmailReport = async (e) => {
+    e.preventDefault();
+
+    if (!emailAddress || !emailAddress.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      await analysisAPI.emailReport(id, emailAddress);
+      toast.success(`Report sent to ${emailAddress}!`);
+      setEmailModalOpen(false);
+      setEmailAddress('');
+    } catch (error) {
+      console.error('Email send error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to send email');
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -233,12 +259,59 @@ const AnalysisDetail = () => {
             <Download size={18} />
             Download PDF
           </button>
+          <button onClick={() => setEmailModalOpen(true)} className="btn-secondary">
+            <Mail size={18} />
+            Email Report
+          </button>
           <button onClick={() => navigate('/dashboard')} className="btn-secondary">
             <ArrowLeft size={18} />
             Back to Dashboard
           </button>
         </div>
       </header>
+
+      {/* Email Modal */}
+      <Modal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        title="Email Report"
+        size="medium"
+      >
+        <form onSubmit={handleEmailReport} className="email-form">
+          <p className="email-form-description">
+            Enter an email address to receive this analysis report as a PDF attachment.
+          </p>
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              value={emailAddress}
+              onChange={(e) => setEmailAddress(e.target.value)}
+              placeholder="example@email.com"
+              required
+              className="email-input"
+            />
+          </div>
+          <div className="modal-actions">
+            <button
+              type="button"
+              onClick={() => setEmailModalOpen(false)}
+              className="btn-cancel"
+              disabled={sendingEmail}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={sendingEmail}
+            >
+              {sendingEmail ? 'Sending...' : 'Send Report'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       <div className="detail-content">
         {/* Performance Report */}

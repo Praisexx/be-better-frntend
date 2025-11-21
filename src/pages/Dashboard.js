@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { analysisAPI, uploadAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, FileText, Clock, CheckCircle, BarChart3, Upload } from 'lucide-react';
+import { TrendingUp, FileText, Clock, CheckCircle, Upload, Link2 } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -12,7 +11,6 @@ const Dashboard = () => {
   const [analyses, setAnalyses] = useState([]);
   const [queueStatus, setQueueStatus] = useState({ queue_count: 0, analyses: [] });
   const [loading, setLoading] = useState(true);
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,22 +97,33 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-left">
-          <BarChart3 className="header-icon" size={32} />
-          <h1>Meta Ads AI Analyzer</h1>
+      {/* Quick Actions Section */}
+      <div className="quick-actions-section">
+        <h2>Get Started with Your Analysis</h2>
+        <div className="quick-actions-grid">
+          <div className="quick-action-card" onClick={() => navigate('/connect-account')}>
+            <div className="quick-action-icon social">
+              <Link2 size={32} />
+            </div>
+            <h3>Connect Social Account</h3>
+            <p>Link your Meta, Twitter, or LinkedIn ad accounts for automatic data sync and real-time insights.</p>
+            <button className="quick-action-btn">
+              Connect Account →
+            </button>
+          </div>
+
+          <div className="quick-action-card" onClick={() => navigate('/upload')}>
+            <div className="quick-action-icon csv">
+              <Upload size={32} />
+            </div>
+            <h3>Upload CSV File</h3>
+            <p>Have your ad data in a CSV file? Upload it directly and get AI-powered analysis instantly.</p>
+            <button className="quick-action-btn">
+              Upload CSV →
+            </button>
+          </div>
         </div>
-        <div className="header-actions">
-          <span className="user-email">{user?.email}</span>
-          <button onClick={() => navigate('/upload')} className="btn-primary">
-            <Upload size={18} />
-            Upload New CSV
-          </button>
-          <button onClick={logout} className="btn-secondary">
-            Logout
-          </button>
-        </div>
-      </header>
+      </div>
 
       {queueStatus.queue_count > 0 && (
         <div className="queue-status">
@@ -231,10 +240,18 @@ const Dashboard = () => {
         {analyses.length === 0 ? (
           <div className="empty-state">
             <Upload size={48} />
-            <p>No analyses yet. Upload your first Meta Ads CSV to get started!</p>
-            <button onClick={() => navigate('/upload')} className="btn-primary">
-              Upload CSV
-            </button>
+            <h3>No analyses yet. Get started!</h3>
+            <p>Connect your social media ad accounts or upload a CSV file to begin analyzing your campaigns.</p>
+            <div className="empty-state-actions">
+              <button onClick={() => navigate('/connect-account')} className="btn-primary">
+                <Link2 size={18} />
+                Connect Account
+              </button>
+              <button onClick={() => navigate('/upload')} className="btn-secondary">
+                <Upload size={18} />
+                Upload CSV
+              </button>
+            </div>
           </div>
         ) : (
           <div className="analyses-grid">

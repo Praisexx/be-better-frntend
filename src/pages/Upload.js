@@ -58,13 +58,6 @@ const Upload = () => {
 
   return (
     <div className="upload-container">
-      <div className="upload-header">
-        <h1>Upload Your Data</h1>
-        <button onClick={() => navigate('/dashboard')} className="btn-secondary">
-          ← Back to Dashboard
-        </button>
-      </div>
-
       <div className="upload-content">
         <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
           <input {...getInputProps()} />
