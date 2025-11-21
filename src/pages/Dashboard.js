@@ -239,6 +239,7 @@ const Dashboard = () => {
         ) : (
           <div className="analyses-grid">
             {analyses.map((analysis) => {
+              console.log('Analysis Data:', analysis); // Debugging
               let title = `Analysis #${analysis.id}`;
               try {
                 if (analysis.results_json) {
