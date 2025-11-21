@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const fetchAnalyses = async () => {
     try {
-      const response = await analysisAPI.getHistory(10);
+      const response = await analysisAPI.getHistory(50);
       setAnalyses(response.data);
     } catch (error) {
       console.error('Error fetching analyses:', error);
