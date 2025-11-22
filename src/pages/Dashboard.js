@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { analysisAPI, uploadAPI } from '../services/api';
+import { analysisAPI, uploadAPI, accountAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, FileText, Clock, CheckCircle, Upload, Link2 } from 'lucide-react';
@@ -10,6 +10,7 @@ const Dashboard = () => {
   // Dashboard component for displaying analysis history
   const [analyses, setAnalyses] = useState([]);
   const [queueStatus, setQueueStatus] = useState({ queue_count: 0, analyses: [] });
+  const [connectedAccounts, setConnectedAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     try {
-      await Promise.all([fetchAnalyses(), fetchQueueStatus()]);
+      await Promise.all([fetchAnalyses(), fetchQueueStatus(), fetchConnectedAccounts()]);
     } catch (error) {
       toast.error('Error loading data');
     } finally {
@@ -44,6 +45,34 @@ const Dashboard = () => {
       setQueueStatus(response.data);
     } catch (error) {
       console.error('Error fetching queue status:', error);
+    }
+  };
+
+  const fetchConnectedAccounts = async () => {
+    try {
+      const response = await accountAPI.getConnectedAccounts();
+      // Add mock Meta connection for demo
+      const mockMetaConnection = {
+        id: 1,
+        platform: 'meta',
+        account_name: 'covenantchukwudi4real',
+        account_id: 'meta_demo_001',
+        connected_at: new Date().toISOString(),
+        last_sync: new Date().toISOString()
+      };
+      setConnectedAccounts([mockMetaConnection, ...response.data]);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      // Even if API fails, show mock Meta connection
+      const mockMetaConnection = {
+        id: 1,
+        platform: 'meta',
+        account_name: 'covenantchukwudi4real',
+        account_id: 'meta_demo_001',
+        connected_at: new Date().toISOString(),
+        last_sync: new Date().toISOString()
+      };
+      setConnectedAccounts([mockMetaConnection]);
     }
   };
 
@@ -77,6 +106,10 @@ const Dashboard = () => {
   const pendingAnalyses = analyses.filter(a => a.status === 'pending' || a.status === 'processing').length;
   const failedAnalyses = analyses.filter(a => a.status === 'failed').length;
 
+  // Check if Meta is connected
+  const isMetaConnected = connectedAccounts.some(acc => acc.platform === 'meta');
+  const metaAccount = connectedAccounts.find(acc => acc.platform === 'meta');
+
   // Status distribution data for pie chart
   const statusData = [
     { name: 'Completed', value: completedAnalyses, color: '#10b981' },
@@ -106,9 +139,21 @@ const Dashboard = () => {
               <Link2 size={32} />
             </div>
             <h3>Connect Social Account</h3>
-            <p>Link your Meta, Twitter, or LinkedIn ad accounts for automatic data sync and real-time insights.</p>
+            {isMetaConnected ? (
+              <>
+                <p>
+                  <CheckCircle size={16} style={{ display: 'inline', marginRight: '4px', color: 'var(--success-color)' }} />
+                  Connected to {metaAccount?.account_name || 'Meta'}
+                </p>
+                <p style={{ fontSize: '14px', marginTop: '8px', color: 'var(--text-secondary)' }}>
+                  Click to manage accounts or connect more platforms
+                </p>
+              </>
+            ) : (
+              <p>Link your Meta, Twitter, or LinkedIn ad accounts for automatic data sync and real-time insights.</p>
+            )}
             <button className="quick-action-btn">
-              Connect Account →
+              {isMetaConnected ? 'Manage Accounts →' : 'Connect Account →'}
             </button>
           </div>
 
