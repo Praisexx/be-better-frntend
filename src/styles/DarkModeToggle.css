@@ -1,0 +1,28 @@
+.dark-mode-toggle {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-blue);
+}
+
+.toggle-icon {
+  color: var(--primary-blue);
+  transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover .toggle-icon {
+  color: var(--accent-blue);
+}
