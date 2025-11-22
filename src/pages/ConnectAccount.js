@@ -20,9 +20,28 @@ const ConnectAccount = () => {
   const fetchConnectedAccounts = async () => {
     try {
       const response = await accountAPI.getConnectedAccounts();
-      setConnectedAccounts(response.data);
+      // Add mock Meta connection for demo
+      const mockMetaConnection = {
+        id: 1,
+        platform: 'meta',
+        account_name: 'covenantchukwudi4real',
+        account_id: 'meta_demo_001',
+        connected_at: new Date().toISOString(),
+        last_sync: new Date().toISOString()
+      };
+      setConnectedAccounts([mockMetaConnection, ...response.data]);
     } catch (error) {
       console.error('Error fetching accounts:', error);
+      // Even if API fails, show mock Meta connection
+      const mockMetaConnection = {
+        id: 1,
+        platform: 'meta',
+        account_name: 'covenantchukwudi4real',
+        account_id: 'meta_demo_001',
+        connected_at: new Date().toISOString(),
+        last_sync: new Date().toISOString()
+      };
+      setConnectedAccounts([mockMetaConnection]);
     } finally {
       setLoading(false);
     }
@@ -157,7 +176,7 @@ const ConnectAccount = () => {
                     {connected ? (
                       <span className="status-badge connected">
                         <CheckCircle size={16} />
-                        Connected
+                        Connected to {platform.id === 'meta' ? 'covenantchukwudi4real' : accountInfo?.account_name || 'Account'}
                       </span>
                     ) : (
                       <span className="status-badge disconnected">
